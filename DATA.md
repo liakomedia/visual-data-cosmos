@@ -27,6 +27,10 @@ reuse them, cite the sources below. Compiled by [Liako](https://liako.eu).
 | Supernova remnants | `includes/js/deep*.js` | [VizieR VII/278](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/278) | Green 2019 |
 | Planetary nebulae | `includes/js/deep*.js` | [VizieR V/84 (Strasbourg–ESO)](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=V/84) | Acker et al. 1992 |
 | Gravitational-wave events | `includes/js/deep*.js` | [GWTC via GWOSC](https://gwosc.org) | LIGO/Virgo/KAGRA GWTC |
+| Galaxy redshift survey (all-sky) | `includes/js/deep3.js` | [2MASS Redshift Survey (2MRS)](http://tdc-www.harvard.edu/2mrs/) | Huchra et al. 2012 |
+| Fast radio bursts | `includes/js/deep3.js` | [CHIME/FRB Catalog 1](https://www.chime-frb.ca/catalog) | CHIME/FRB Collaboration 2021 |
+| Lyman-α emitters / deep survey | `includes/js/deep2.js` | [HETDEX](https://hetdex.org) | Mentuch Cooper et al. 2023 |
+| Solar System small bodies (named comets & asteroids) | `includes/js/data.js` | [NASA/JPL Small-Body Database](https://ssd.jpl.nasa.gov/tools/sbdb_query.html) | JPL SBDB |
 | Community exoplanet candidates (3,964) | `includes/js/exo2.js` | [ExoFOP-TESS Community TOIs](https://exofop.ipac.caltech.edu/tess/view_ctoi.php) | NASA / Caltech-IPAC ExoFOP, with per-point discoverer credit |
 | Citizen-science brown dwarfs (582) | `includes/js/exo2.js` | [Backyard Worlds: Planet 9](https://www.backyardworlds.org) via [J/ApJS/253/7](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/253/7) | Kirkpatrick et al. 2021 |
 | Extragalactic planet candidates (3) | `includes/js/data.js` | literature | Di Stefano et al. 2021 (M51-ULS-1b); An et al. 2004 (PA-99-N2); Dai & Guerras 2018 (RX J1131−1231) |
