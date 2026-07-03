@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#05070e"/>
+<title>Visual Data Cosmos — Interactive 3D Map of the Observable Universe</title>
+<meta name="description" content="The observable universe in real 3D — ~131,000 objects from 20 astronomical catalogues: galaxies, star clusters, quasars, pulsars, exoplanets and dark-matter fields, each with its published data. Explore by zooming."/>
+<link rel="canonical" href="https://vdata.liako.eu/cosmos/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Visual Data by Liako"/>
+<meta property="og:url" content="https://vdata.liako.eu/cosmos/"/>
+<meta property="og:title" content="Visual Data Cosmos — Interactive 3D Map of the Observable Universe"/>
+<meta property="og:description" content="~131,000 real objects from 20 astronomical catalogues — galaxies, quasars, pulsars, exoplanets and the dark fields between them, explored purely by zooming."/>
+<meta property="og:image" content="https://vdata.liako.eu/og/cosmos.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="3D map of the observable universe — galaxies, superclusters and survey point clouds"/>
+<meta property="og:locale" content="en_US"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Visual Data Cosmos — Interactive 3D Map of the Observable Universe"/>
+<meta name="twitter:description" content="~131,000 real objects from 20 astronomical catalogues, explored purely by zooming."/>
+<meta name="twitter:image" content="https://vdata.liako.eu/og/cosmos.jpg"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"WebApplication","@id":"https://vdata.liako.eu/cosmos/#app","name":"Visual Data Cosmos","alternateName":"Visual Data Universe","url":"https://vdata.liako.eu/cosmos/","description":"Interactive 3D map of the observable universe — ~131,000 objects from 20 astronomical catalogues (SDSS, Yale BSC, ATNF, GWOSC, NASA Exoplanet Archive and more), from the Solar System to the cosmic web, each with its published data and references.","applicationCategory":"EducationalApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and WebGL","isAccessibleForFree":true,"inLanguage":"en","image":"https://vdata.liako.eu/og/cosmos.jpg","creator":{"@id":"https://liako.eu/#organization"},"publisher":{"@id":"https://liako.eu/#organization"},"isPartOf":{"@id":"https://vdata.liako.eu/#website"},"about":[{"@type":"Thing","name":"Observable universe","sameAs":"https://en.wikipedia.org/wiki/Observable_universe"},{"@type":"Thing","name":"Astronomy","sameAs":"https://en.wikipedia.org/wiki/Astronomy"}]},
+ {"@type":"BreadcrumbList","@id":"https://vdata.liako.eu/cosmos/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Visual Data","item":"https://vdata.liako.eu/"},{"@type":"ListItem","position":2,"name":"Cosmos","item":"https://vdata.liako.eu/cosmos/"}]},
+ {"@type":"WebSite","@id":"https://vdata.liako.eu/#website","name":"Visual Data by Liako","url":"https://vdata.liako.eu/","publisher":{"@id":"https://liako.eu/#organization"}},
+ {"@type":"Organization","@id":"https://liako.eu/#organization","name":"Liako","url":"https://liako.eu/"}
+]}
+</script>
+<link rel="icon" href="/icons/liako-32x32.png" sizes="32x32"/>
+<link rel="icon" href="/icons/liako-192x192.png" sizes="192x192"/>
+<link rel="apple-touch-icon" href="/icons/liako-180x180.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="includes/css/style.css?v=2"/>
+</head>
+<body>
+<div id="graph"></div>
+<div id="loading">Charting the cosmos…</div>
+
+<header>
+  <div class="brand">
+    <h1>Visual Data <span class="d">Cosmos</span></h1>
+    <div class="sub">The cosmos mapped in real 3D space — every discovered object at its true sky position (RA / Dec) and distance.</div>
+  </div>
+  <div id="controls">
+    <button id="bAll" title="Show every object at once and keep them all visible">Show all</button>
+    <button id="bFit" title="Frame the bubble you are currently inside">Fit view</button>
+    <button id="bReset" title="Return to the whole universe">Reset</button>
+    <button id="bFields" title="Show / hide the dark-matter web, dark-energy haze, antimatter and the intergalactic gas between galaxies">Fields ✦</button>
+  </div>
+  <div id="search"><input id="q" type="search" placeholder="Search a star, galaxy, planet…" autocomplete="off"/></div>
+</header>
+<div id="crumbs"></div>
+
+<div id="panel">
+  <div class="close" id="pclose">×</div>
+  <div class="ph" id="pph"></div>
+  <div class="bd" id="pbd"></div>
+</div>
+
+<button id="legend-btn" title="Object types & data layers — show / hide">◈ Legend</button>
+<div id="legend"></div>
+<div id="hud"></div>
+<div id="cite">
+  <button id="cite-btn" title="Data sources & credits">✦ References</button>
+  <div id="cite-body" hidden>
+    <div class="cite-top">Compiled by <a href="https://liako.eu" target="_blank" rel="noopener"><b>Liako</b> — liako.eu ↗</a></div>
+    Stars: <a href="http://tdc-www.harvard.edu/catalogs/bsc5.html" target="_blank" rel="noopener">Yale BSC5 (Hoffleit &amp; Warren 1991) ↗</a> ·
+    Galaxies &amp; cluster members: <a href="https://www.sdss.org" target="_blank" rel="noopener">SDSS DR17 ↗</a><br/>
+    Globular clusters: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/202" target="_blank" rel="noopener">Harris 1996 ↗</a> ·
+    Local Group: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/144/4" target="_blank" rel="noopener">McConnachie 2012 ↗</a> ·
+    M31 clusters: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=V/143" target="_blank" rel="noopener">RBC v5 ↗</a> ·
+    M33 clusters: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJ/720/1674" target="_blank" rel="noopener">San Roman+ 2010 ↗</a><br/>
+    Magellanic Clouds: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/MNRAS/389/678" target="_blank" rel="noopener">Bica+ 2008 ↗</a> ·
+    M87 globulars: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/197/33" target="_blank" rel="noopener">Strader+ 2011 ↗</a> ·
+    M81: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/109/1055" target="_blank" rel="noopener">Perelmuter &amp; Racine 1995 ↗</a> ·
+    M51: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJ/824/71" target="_blank" rel="noopener">Chandar+ 2016 ↗</a><br/>
+    M101: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJ/805/160" target="_blank" rel="noopener">Simanton+ 2015 ↗</a> ·
+    M82: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJ/766/20" target="_blank" rel="noopener">Lim+ 2013 ↗</a> ·
+    Centaurus A: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/134/494" target="_blank" rel="noopener">Woodley+ 2007 ↗</a> ·
+    Sombrero: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/132/1593" target="_blank" rel="noopener">Spitler+ 2006 ↗</a> ·
+    Antennae: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/140/75" target="_blank" rel="noopener">Whitmore+ 2010 ↗</a> ·
+    M101 H II regions: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/73/661" target="_blank" rel="noopener">Hodge+ 1990 ↗</a><br/>
+    Cluster member stars: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/A%2bA/616/A10" target="_blank" rel="noopener">Gaia Collaboration 2018 ↗</a> ·
+    Globular-cluster star fields: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=I/355" target="_blank" rel="noopener">ESA Gaia DR3 ↗</a><br/>
+    Extragalactic planet candidates: <a href="https://ui.adsabs.harvard.edu/abs/2021NatAs...5.1297D" target="_blank" rel="noopener">Di Stefano+ 2021 (M51-ULS-1b) ↗</a> ·
+    <a href="https://ui.adsabs.harvard.edu/abs/2004ApJ...601..845A" target="_blank" rel="noopener">An+ 2004 (PA-99-N2) ↗</a> ·
+    <a href="https://ui.adsabs.harvard.edu/abs/2018ApJ...853L..27D" target="_blank" rel="noopener">Dai &amp; Guerras 2018 (RX J1131−1231) ↗</a><br/>
+    Citizen-science planet candidates: <a href="https://exofop.ipac.caltech.edu/tess/view_ctoi.php" target="_blank" rel="noopener">ExoFOP-TESS Community TOIs (NASA / Caltech-IPAC) ↗</a> ·
+    Brown dwarfs (incl. <a href="https://www.backyardworlds.org" target="_blank" rel="noopener">Backyard Worlds ↗</a>):
+    <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/253/7" target="_blank" rel="noopener">Kirkpatrick+ 2021 ↗</a><br/>
+    Notable galaxies — positions, distances &amp; morphology: <a href="https://ned.ipac.caltech.edu" target="_blank" rel="noopener">NASA/IPAC NED ↗</a> ·
+    <a href="https://simbad.cds.unistra.fr/simbad/" target="_blank" rel="noopener">SIMBAD (CDS) ↗</a><br/>
+    Surface imagery: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope (CC BY 4.0) ↗</a> ·
+    Moon &amp; dwarf-planet mosaics: NASA/JPL/USGS via <a href="https://github.com/Stellarium/stellarium/tree/master/textures" target="_blank" rel="noopener">Stellarium ↗</a><br/>
+    Local Volume: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/145/101" target="_blank" rel="noopener">Karachentsev+ 2013 ↗</a> ·
+    Open clusters: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/A%2bA/640/A1" target="_blank" rel="noopener">Cantat-Gaudin+ 2020 (Gaia) ↗</a><br/>
+    Exoplanets: <a href="https://exoplanetarchive.ipac.caltech.edu" target="_blank" rel="noopener">NASA Exoplanet Archive ↗</a> ·
+    Pulsars: <a href="https://www.atnf.csiro.au/research/pulsar/psrcat/" target="_blank" rel="noopener">ATNF (Manchester+ 2005) ↗</a> ·
+    Quasars: <a href="https://www.sdss.org" target="_blank" rel="noopener">SDSS DR17 ↗</a><br/>
+    SNRs: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/278" target="_blank" rel="noopener">Green 2019 ↗</a> ·
+    Planetary nebulae: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=V/84" target="_blank" rel="noopener">Acker+ 1992 ↗</a> ·
+    GW events: <a href="https://gwosc.org" target="_blank" rel="noopener">GWTC / GWOSC ↗</a> ·
+    Deep survey: <a href="https://hetdex.org/data-results/" target="_blank" rel="noopener">HETDEX — Mentuch Cooper+ 2023 ↗</a><br/>
+    All-sky galaxies: <a href="https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/199/26" target="_blank" rel="noopener">2MRS — Huchra+ 2012 ↗</a> ·
+    FRBs: <a href="https://www.chime-frb.ca" target="_blank" rel="noopener">CHIME/FRB Catalog 1 ↗</a> ·
+    Asteroids: <a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html" target="_blank" rel="noopener">NASA/JPL Small-Body Database ↗</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/3d-force-graph@1.80.0"></script>
+<script>if(typeof ForceGraph3D==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.80.0"><\/script>');}</script>
+<!-- global THREE must match the revision bundled inside 3d-force-graph (r183) — a version
+     mismatch makes textures upload but sample BLACK. app.js boot() polls until this lands. -->
+<script type="module">
+try{ window.THREE=await import('https://unpkg.com/three@0.183.0/build/three.module.js'); }
+catch(e){ window.THREE=await import('https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js'); }
+</script>
+<script src="includes/js/data.js?v=4"></script>
+<script src="includes/js/stars-bsc.js"></script>
+<script src="includes/js/galaxies-sdss.js"></script>
+<script src="includes/js/members.js"></script>
+<script src="includes/js/members2.js"></script>
+<script src="includes/js/members3.js"></script>
+<script src="includes/js/members4.js"></script>
+<script src="includes/js/exo2.js"></script>
+<script src="includes/js/deep.js"></script>
+<script src="includes/js/deep2.js"></script>
+<script src="includes/js/deep3.js"></script>
+<script src="includes/js/app.js?v=36"></script>
+<script defer src="/track.js"></script>
+</body>
+</html>
