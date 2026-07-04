@@ -1,5 +1,15 @@
 # Visual Data Cosmos — the observable universe in real 3D
 
+[![Live](https://img.shields.io/badge/live-vdata.liako.eu%2Fcosmos-000000?style=flat-square&logo=googlechrome&logoColor=white)](https://vdata.liako.eu/cosmos/)
+[![Licence: MIT (code)](https://img.shields.io/badge/licence-MIT_(code)-f4f4f4?style=flat-square)](LICENSE)
+[![Three.js r183](https://img.shields.io/badge/three.js-r183-049EF4?style=flat-square&logo=threedotjs&logoColor=white)](https://threejs.org)
+[![Objects](https://img.shields.io/badge/objects-~131%2C000-67e8f9?style=flat-square)](DATA.md)
+[![Catalogues](https://img.shields.io/badge/catalogues-20%2B_cited-e9c46a?style=flat-square)](DATA.md)
+[![Build](https://img.shields.io/badge/build-none_·_vanilla_JS-3fb950?style=flat-square)](#running-locally)
+
+![Visual Data Cosmos — orbiting the Milky Way](preview.gif)
+
+
 **Live: [vdata.liako.eu/cosmos](https://vdata.liako.eu/cosmos/)**
 
 An interactive 3D map of the observable universe: ~131,000 objects from 20+ astronomical
