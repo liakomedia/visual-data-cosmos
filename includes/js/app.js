@@ -1238,6 +1238,13 @@ function showPanel(n){
   let rows=''; order.forEach(([k,l])=>{ const val=m[k]; if(val && val!=='—') rows+=row(l,val); });
   if(rows) h+=`<div class="rows">${rows}</div>`;
   if(m.note) h+=`<div class="note" style="font-style:normal;color:#dbe4ff">${m.note}</div>`;
+  // deep-sky objects link to their scholarly literature (NASA ADS resolves names via SIMBAD;
+  // Solar System bodies aren't SIMBAD objects, so they don't get the link)
+  const ADS_TYPES={galaxy:1,star:1,cluster:1,nebula:1,blackhole:1,exotic:1,brown:1,structure:1,cosmology:1};
+  if(ADS_TYPES[n.type] && n.kind!=='root'){
+    const q=(m.code && m.code!=='—')? m.code : n.name;
+    h+=`<div class="note" style="font-style:normal;margin-top:8px"><a href="https://ui.adsabs.harvard.edu/search/q=${encodeURIComponent('object:"'+q+'"')}&sort=citation_count desc" target="_blank" rel="noopener" style="color:#9fd0ff">In the literature — NASA ADS ↗</a></div>`;
+  }
   pbd.innerHTML=h; panel.classList.add('open');
 }
 /* clicking a field's points opens its data (dark matter / dark energy / antimatter / intergalactic gas) */
