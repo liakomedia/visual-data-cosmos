@@ -74,6 +74,7 @@ const DATA={name:"Cosmos",root:true,virtual:true,meta:C("A map of the cosmos by 
   {name:"Arrokoth",type:"smallbody",v:1,meta:S("486958 Arrokoth, Ultima Thule","—","~7×10¹⁴ kg","—","44.6 AU","—","Spacecraft only","—","—","A snowman-shaped contact binary — the most distant object ever visited (2019).")},
   {name:"Comet Hale-Bopp",type:"smallbody",v:2,meta:S("C/1995 O1","—","~10¹⁶ kg","−1 (at peak)","Returns in ~2,500 yr","—","Great comet of 1997","—","—","One of the brightest comets of the 20th century — visible to the naked eye for 18 months.")},
   {name:"2I/Borisov",type:"smallbody",v:1,meta:S("Comet Borisov","2I","—","—","Interstellar (passed 2019)","—","Telescope","—","—","The first clearly cometary interstellar visitor to the Solar System.")},
+  {name:"3I/ATLAS",type:"smallbody",v:2,meta:S("C/2025 N1 (ATLAS)","3I","—","—","~9.5 au (outbound, Jul 2026)","Interstellar comet — hyperbolic","Telescope","—","—","The third interstellar object ever found (1 July 2025). Perihelion just inside Mars's orbit in Oct 2025 — now crossing Saturn's distance on its way out of the Solar System forever.")},
   {name:"Planet Nine",type:"planet",v:2,meta:S("Planet X (hypothetical)","—","~5–10 M⊕","—","~400–800 AU (proposed)","—","Undetected","—","—","A hypothesised distant giant planet invoked to explain the clustered orbits of far Kuiper-belt objects.")},
  ]},
 
@@ -341,7 +342,8 @@ const DATA={name:"Cosmos",root:true,virtual:true,meta:C("A map of the cosmos by 
 ]},
 {name:"RX J1131−1231",type:"exotic",v:2,meta:S("—","RX J1131−1231","planet-mass bodies: ~Moon → Jupiter","—","~3.5 Gly (lens z≈0.30)","Quasar lens · rogue-planet population","Chandra microlensing signal","11h 31m 52s","−12° 31′ 57″","Microlensing flickers in this quadruply-lensed quasar imply ~2,000 unbound planet-mass objects per main-sequence star in the lensing galaxy — the only planet-mass detection beyond the Local Group (Dai & Guerras 2018).")},
 {name:"GN-z11",type:"galaxy",v:3,meta:S("—","GN-z11","~10⁹ M☉","~26 (very faint)","~13.4 Gly (z≈11)","—","Hubble/JWST only","12h 36m 25s","+62° 14′","One of the most distant galaxies known; seen ~400 Myr after the Big Bang.")},
-{name:"JADES-GS-z14-0",type:"galaxy",v:3,meta:S("—","JADES-GS-z14-0","—","~30 (JWST)","~13.5 Gly (z≈14.3)","—","JWST only","03h 32m 20s","−27° 47′","The most distant confirmed galaxy — seen just ~290 million years after the Big Bang.")},
+{name:"JADES-GS-z14-0",type:"galaxy",v:3,meta:S("—","JADES-GS-z14-0","—","~30 (JWST)","~13.5 Gly (z≈14.3)","—","JWST only","03h 32m 20s","−27° 47′","Held the cosmic distance record until MoM-z14 (2025) — seen ~290 million years after the Big Bang.")},
+{name:"MoM-z14",type:"galaxy",v:3,meta:S("—","MoM-z14","—","~27 (JWST)","~13.53 Gly (z=14.44)","—","JWST only; COSMOS field","10h 00m 22.40s","+02° 16′ 23.2″","The most distant confirmed galaxy — seen just ~280 million years after the Big Bang, and only ~240 light-years across. Naidu et al. 2025/26.")},
 
 /* ============ DEEP-SPACE STRUCTURES — the space between the galaxies ============ */
 {name:"Great Attractor",type:"structure",v:4,meta:S("—","—","~10¹⁶ M☉","—","~250 Mly","Norma (hidden by Milky Way)","Inferred by galaxy flow","16h 15m","−60°","A gravitational anomaly pulling our whole neighbourhood at ~600 km/s.")},
@@ -405,7 +407,7 @@ const SIZES={
  "Triton":2707,"Proteus":420,"Nereid":340,"Charon":1212,"Hiʻiaka":320,"Namaka":170,
  /* --- dwarf planets & small bodies (belts/clouds sized by extent) --- */
  "Pluto":2377,"Ceres":940,"Eris":2326,"Makemake":1430,"Haumea":1600,"Quaoar":1110,"Gonggong":1230,"Orcus":910,"Sedna":1000,
- "Vesta":525,"Bennu":0.49,"Arrokoth":36,"Halley's Comet":11,"'Oumuamua":0.2,"Comet Hale-Bopp":60,"2I/Borisov":1,
+ "Vesta":525,"Bennu":0.49,"Arrokoth":36,"Halley's Comet":11,"'Oumuamua":0.2,"Comet Hale-Bopp":60,"2I/Borisov":1,"3I/ATLAS":5,
  "Asteroid Belt":1.5e8,"Kuiper Belt":3e9,"Oort Cloud":1.5e13,"Planet Nine":40000,
  /* --- exoplanets --- */
  "Proxima b":14000,"Pollux b":170000,"Poltergeist":15000,
@@ -452,7 +454,7 @@ const SIZES={
  "Milky Way":9.5e17,"Andromeda Galaxy":2.1e18,"Triangulum Galaxy":5.7e17,"Large Magellanic Cloud":1.3e17,"Small Magellanic Cloud":6.6e16,
  "Whirlpool Galaxy":7.2e17,"Pinwheel Galaxy":1.6e18,"Sombrero Galaxy":4.6e17,"Cigar Galaxy":3.5e17,"Centaurus A":5.7e17,"Messier 87":1.1e18,
  "Bode's Galaxy":8.5e17,"Black Eye Galaxy":5.1e17,"Antennae Galaxies":5e18,"Hoag's Object":1.1e18,"IC 1101":3.8e19,"Sagittarius Dwarf":9.5e16,
- "GN-z11":7.6e16,"JADES-GS-z14-0":1.5e16,"M51-ULS-1 b (candidate)":116000,"PA-99-N2 b (candidate)":160000,"RX J1131−1231":1e13,
+ "GN-z11":7.6e16,"JADES-GS-z14-0":1.5e16,"MoM-z14":2.3e15,"M51-ULS-1 b (candidate)":116000,"PA-99-N2 b (candidate)":160000,"RX J1131−1231":1e13,
  /* member/satellite galaxies added from catalogues */
  "NGC 5195":1.4e17,"Messier 32":6.2e16,"Messier 110":1.6e17,"Leo I":1.9e16,"Barnard's Galaxy":7e16,"IC 1613":7e16,
  "Messier 49":1.5e18,"Messier 60":1.1e18,"Messier 84":1e18,"Messier 86":1.4e18,
