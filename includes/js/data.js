@@ -351,6 +351,8 @@ const DATA={name:"Cosmos",root:true,virtual:true,meta:C("A map of the cosmos by 
 {name:"Boötes Void",type:"structure",v:3,meta:S("The Great Nothing","—","—","—","~700 Mly","Near-empty region","Boötes","14h 50m","+46°","A ~330-Mly bubble of almost empty space, with very few galaxies.")},
 {name:"3C 273",type:"exotic",v:3,meta:S("—","3C 273","~8.9×10⁸ M☉","12.9","~2.4 Gly","Quasar (AGN)","Telescope; Virgo","12h 29m 07s","+02° 03′ 09″","The first quasar identified — a brilliant, distant galactic nucleus.")},
 {name:"TON 618",type:"blackhole",v:3,meta:S("—","TON 618","~6.6×10¹⁰ M☉","15.9 (quasar)","~10.4 Gly","Ultramassive black hole / quasar","Telescope only","12h 28m 24s","+31° 28′ 38″","One of the most massive black holes known — ~66 billion M☉.")},
+{name:"EUCL J1729+6410",type:"blackhole",v:3,meta:S("EUCL J172902.75+641018.1","Euclid QSO z=7.77","—","—","~13.1 Gly","Quasar (AGN), z = 7.77","Euclid space telescope","17h 29m 02.75s","+64° 10′ 18.1″","The most ancient quasar known (July 2026) — shining when the Universe was just 670 million years old. Euclid discovery, Yang et al. 2026.")},
+{name:"EUCL J1253+7054",type:"blackhole",v:3,meta:S("EUCL J125308.55+705432.3","Euclid QSO z=7.69","—","—","~13.1 Gly","Quasar (AGN), z = 7.69","Euclid space telescope","12h 53m 08.55s","+70° 54′ 32.3″","Second most ancient quasar known — one of 31 early quasars found by Euclid (12 at z ≥ 7). Yang et al. 2026.")},
 {name:"GW150914",type:"exotic",v:2,meta:S("—","GW150914","36+29 → 62 M☉","—","~1.3 Gly","Black-hole merger (gravitational wave)","LIGO (2015)","—","—","The first direct detection of gravitational waves.")},
 {name:"Cosmic Microwave Background",type:"cosmology",v:5,meta:S("CMB, relic radiation","—","—","—","~13.8 Gly (surface of last scattering)","—","All-sky (microwave)","—","—","The afterglow of the Big Bang, 2.725 K — the light horizon that surrounds everything.")},
 
@@ -438,6 +440,7 @@ const SIZES={
  "Luhman 16":1.4e5,"WISE 0855−0714":1.0e5,"Teide 1":1.5e5,
  /* --- compact objects & black holes (event-horizon / neutron-star diameter) --- */
  "Sagittarius A*":2.4e7,"M87*":3.8e10,"TON 618":3.9e11,"Cygnus X-1":124,"GW150914":370,"3C 273":5.2e9,
+ "EUCL J1729+6410":5e9,"EUCL J1253+7054":5e9,
  "Crab Pulsar":24,"PSR B1919+21":24,"Magnetar SGR 1806−20":24,"Hulse–Taylor Binary":24,"Vela Pulsar":24,"PSR B1257+12":24,
  /* --- nebulae (extent) --- */
  "Orion Nebula":2.3e14,"Eagle Nebula":6.6e14,"Carina Nebula":2.8e15,"Lagoon Nebula":5.2e14,"Ring Nebula":9.5e12,"Helix Nebula":2.7e13,

@@ -33,6 +33,7 @@ reuse them, cite the sources below. Compiled by [Liako](https://liako.eu).
 | Solar System small bodies (named comets & asteroids) | `includes/js/data.js` | [NASA/JPL Small-Body Database](https://ssd.jpl.nasa.gov/tools/sbdb_query.html) | JPL SBDB |
 | Community exoplanet candidates (3,964) | `includes/js/exo2.js` | [ExoFOP-TESS Community TOIs](https://exofop.ipac.caltech.edu/tess/view_ctoi.php) | NASA / Caltech-IPAC ExoFOP, with per-point discoverer credit |
 | Citizen-science brown dwarfs (582) | `includes/js/exo2.js` | [Backyard Worlds: Planet 9](https://www.backyardworlds.org) via [J/ApJS/253/7](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/253/7) | Kirkpatrick et al. 2021 |
+| Euclid z>7 quasars (2 record-holders, July 2026) | `includes/js/data.js` | [Euclid Collaboration](https://doi.org/10.1051/0004-6361/202658883) | Yang et al. 2026, A&A — "Euclid: Discovery of 31 new quasars at 6.6<z<7.8" |
 | Extragalactic planet candidates (3) | `includes/js/data.js` | literature | Di Stefano et al. 2021 (M51-ULS-1b); An et al. 2004 (PA-99-N2); Dai & Guerras 2018 (RX J1131−1231) |
 | Named-object positions, distances, morphology | `includes/js/data.js` | [NASA/IPAC NED](https://ned.ipac.caltech.edu) · [SIMBAD (CDS)](https://simbad.cds.unistra.fr/simbad/) | Acknowledge NED (Caltech/JPL/NASA) and SIMBAD (CDS, Strasbourg) |
 | Solar System bodies (masses, diameters, orbits) | `includes/js/data.js` | [NASA NSSDCA](https://nssdc.gsfc.nasa.gov/planetary/factsheet/) · [JPL SSD](https://ssd.jpl.nasa.gov) | NSSDCA; JPL Solar System Dynamics |
