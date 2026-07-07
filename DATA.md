@@ -10,6 +10,7 @@ reuse them, cite the sources below. Compiled by [Liako](https://liako.eu).
 | Bright stars (9,096, all naked-eye) | `includes/js/stars-bsc.js` | [Yale Bright Star Catalogue, 5th ed.](http://tdc-www.harvard.edu/catalogs/bsc5.html) | Hoffleit & Warren 1991 |
 | Galaxy survey (19,983, uniform sample) | `includes/js/galaxies-sdss.js` | [SDSS DR17 SkyServer](https://www.sdss.org) SpecObj | Abdurro'uf et al. 2022 (SDSS DR17) |
 | Deep galaxy survey (22,479, uniform sample to z=1.6) | `includes/js/desi.js` | [DESI DR1](https://data.desi.lbl.gov) via [NOIRLab Astro Data Lab](https://datalab.noirlab.edu) TAP (`desi_dr1.zpix`) | DESI Collaboration 2025 (Data Release 1) |
+| Deep quasar survey (10,867, uniform sample z 0.1–5) | `includes/js/desi.js` (`DESIQ`) | [DESI DR1](https://data.desi.lbl.gov) via [NOIRLab Astro Data Lab](https://datalab.noirlab.edu) TAP | DESI Collaboration 2025 (Data Release 1) |
 | Milky Way globular clusters (145) | `includes/js/members.js` | [VizieR VII/202](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/202) | Harris 1996 (2010 ed.) |
 | Local Group galaxies (101) | `includes/js/members.js` | [VizieR J/AJ/144/4](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/144/4) | McConnachie 2012 |
 | Virgo & Coma cluster members (542 + 958) | `includes/js/members.js` | SDSS DR17 targeted queries | Abdurro'uf et al. 2022 |

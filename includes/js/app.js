@@ -979,6 +979,23 @@ function buildMemberClouds(){
     _memberClouds.push({pts, data:QSO, kindLabel:'Quasar · SDSS',
       panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+lookbackGyr(s2[2]).toFixed(1)+' Gly (light-travel)']].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
   }
+  // DESI DR1 QUASARS — the independent twin of the SDSS quasar shell (same radial ruler,
+  // z 0.1–5): two instruments, one deep universe. Rose ramp vs SDSS's orange→red.
+  if(typeof DESIQ!=='undefined'){
+    const r0=705, r1=1060, pos=[], col=[], c=new THREE.Color();
+    const geo=new THREE.BufferGeometry();
+    DESIQ.forEach(g=>{ const d=dirOf(g[0],g[1]), r=r0+Math.min(1,(g[2]-0.1)/4.9)*(r1-r0);
+      pos.push(d[0]*r, d[1]*r, d[2]*r);
+      c.setHSL(0.89-Math.min(1,(g[2]-0.1)/4.9)*0.07, 0.72, 0.64);   // rose → violet with z
+      col.push(c.r,c.g,c.b); });
+    geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:2.1, map:dotTexture(), vertexColors:true, transparent:true, opacity:0.75,
+      sizeAttenuation:false, depthWrite:false, blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat); pts.frustumCulled=false; Graph.scene().add(pts);
+    _memberClouds.push({pts, data:DESIQ, kindLabel:'Quasar · DESI DR1',
+      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+lookbackGyr(s2[2]).toFixed(1)+' Gly (light-travel)']].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
+  }
   // SUPERNOVA REMNANTS (Green 2019) — true sky direction in the Milky Way disc; catalogue has no distances,
   // so depth is a disc-like spread (noted in the panel)
   if(typeof SNRCAT!=='undefined' && mw && ss){
@@ -1382,7 +1399,7 @@ function buildLegendLayers(){
     'Pulsar · ATNF catalogue':'pulsars','Quasar · SDSS':'quasars',
     'Supernova remnant · Green cat.':'SNRs','Planetary nebula · Strasbourg-ESO':'planetary nebulae',
     'GW merger · LIGO/Virgo/KAGRA':'GW events','Source · HETDEX':'HETDEX',
-    'Galaxy · 2MRS all-sky':'2MRS all-sky','Galaxy · DESI DR1':'DESI galaxies','Fast radio burst · CHIME':'FRBs','Asteroid · JPL SBDB':'asteroids'};
+    'Galaxy · 2MRS all-sky':'2MRS all-sky','Galaxy · DESI DR1':'DESI galaxies','Quasar · DESI DR1':'DESI quasars','Fast radio burst · CHIME':'FRBs','Asteroid · JPL SBDB':'asteroids'};
   _memberClouds.forEach(mc=>{ const col='#'+mc.pts.material.color.getHexString();
     mkToggle(el, `<span class="sw" style="background:${col};border-radius:50%"></span>${SHORT[mc.kindLabel]||mc.kindLabel}`,
       ()=>mc.pts.visible, ()=>{ mc.pts.visible=!mc.pts.visible; }); });
