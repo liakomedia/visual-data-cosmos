@@ -28,7 +28,7 @@ Mars radii out to JADES-GS-z14-0 near the edge of the observable universe.
 - A live heliocentric Solar System with true moon systems
 - Dark matter, dark energy, antimatter and the intergalactic medium as volumetric fields
 
-Every dataset is cited in the in-app **✦ References** panel and in [DATA.md](DATA.md).
+Every dataset is cited in the in-app **✦ References** panel and in [DATA.md](DATA.md). How each dataset is technically placed, sized and coloured — the rulers, the coordinate maths, and what is exact versus statistical — is documented in [METHODS.md](METHODS.md).
 
 ## Running locally
 
