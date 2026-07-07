@@ -426,6 +426,17 @@ function flyTo(n){ if(!Graph||n.x==null) return;
   if(c3){ const nr=Math.min(0.1, Math.max(1e-4, d/400)); if(c3.near>nr){ c3.near=nr; c3.updateProjectionMatrix(); } }
   easeCam({x:n.x+ux*d,y:n.y+uy*d,z:n.z+uz*d},{x:n.x,y:n.y,z:n.z},800);
 }
+/* fly the camera to look closely at an arbitrary point — so survey/field dots (stars, SDSS &
+   DESI galaxies, cluster members, the dark fields) are zoomable too, not just named bubbles. */
+function flyToPos(x,y,z,size){ if(!Graph) return;
+  const cam=Graph.cameraPosition(), dx=cam.x-x, dy=cam.y-y, dz=cam.z-z, L=Math.hypot(dx,dy,dz);
+  const d=Math.max((size||1)*8+3, L*0.16);           // always zoom IN from wherever you are
+  const ux=L>1e-6?dx/L:0, uy=L>1e-6?dy/L:0, uz=L>1e-6?dz/L:1;
+  const c3=Graph.camera&&Graph.camera();
+  if(c3){ const nr=Math.min(0.1, Math.max(1e-4, d/400)); if(c3.near>nr){ c3.near=nr; c3.updateProjectionMatrix(); } }
+  easeCam({x:x+ux*d,y:y+uy*d,z:z+uz*d},{x,y,z},800);
+}
+function ptPos(cloud,i){ const g=cloud.geometry.attributes.position; return [g.getX(i),g.getY(i),g.getZ(i)]; }
 function boot(){
   if(typeof ForceGraph3D==='undefined'||typeof THREE==='undefined'){ setTimeout(boot,120); return; }
   document.getElementById('loading').classList.add('done');
@@ -1303,11 +1314,11 @@ elGraph.addEventListener('pointerup',e=>{ const wasMulti=_multi, dxy=_downXY; _e
   if(moved>=8 || performance.now()-_downT>600) return;          // a drag/hold, not a tap
   const node=pickNodeAt(e);
   if(node && !_isDiffuse(node)){ onClick(node); return; }        // a solid body under the cursor wins
-  const si=pickStar(e); if(si!=null){ showStarPanel(si); return; }   // a catalogue star?
-  const mi=pickMember(e); if(mi){ showMemberPanel(mi); return; }     // a catalogue member (globular/dwarf/cluster galaxy)?
-  const gi=pickSdss(e); if(gi!=null){ showSdssPanel(gi); return; }   // an SDSS survey galaxy?
+  const si=pickStar(e); if(si!=null){ showStarPanel(si); const p=ptPos(_starCloud,si); flyToPos(p[0],p[1],p[2],0.5); return; }   // a catalogue star? zoom to it
+  const mi=pickMember(e); if(mi){ showMemberPanel(mi); const p=ptPos(mi.mc.pts,mi.i); flyToPos(p[0],p[1],p[2],1.4); return; }    // a catalogue member (galaxy/globular/DESI…)
+  const gi=pickSdss(e); if(gi!=null){ showSdssPanel(gi); const p=ptPos(_sdssCloud,gi); flyToPos(p[0],p[1],p[2],1.2); return; }   // an SDSS survey galaxy
   if(node){ onClick(node); return; }                             // otherwise the smallest bubble under the cursor
-  const fk=pickField(e); if(fk) showFieldPanel(fk);              // no bubble at all → maybe a dark/energy field
+  const fk=pickField(e); if(fk){ showFieldPanel(fk.key); flyToPos(fk.point.x,fk.point.y,fk.point.z,7); }   // a dark/energy field → dive into it
 },true);
 
 /* Click a bubble → fly the camera to look closely at it (its contents are already visible inside). */
@@ -1350,7 +1361,7 @@ function pickField(e){
   const cam=Graph.camera(); _fieldRay.setFromCamera({x:nx,y:ny}, cam);
   _fieldRay.params.Points.threshold = Math.max(3, Math.hypot(cam.position.x,cam.position.y,cam.position.z)/90);
   const hits=_fieldRay.intersectObjects(_darkFields.filter(f=>f.visible), false);
-  return hits.length ? hits[0].object.userData.field : null;
+  return hits.length ? {key:hits[0].object.userData.field, point:hits[0].point} : null;
 }
 function showFieldPanel(key){ const f=FIELD_META[key]; if(!f) return; pph.style.display='none';
   let h=`<span class="tag" style="background:${f.color};color:#04121a;border-color:${f.color}">${f.label}</span>`;
