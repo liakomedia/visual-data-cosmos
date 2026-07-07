@@ -71,7 +71,7 @@ function walk(n,parent,type,depth){
     GX("NGC 4839","—","NGC 4839","—","13.4","~320 Mly","S0 group","12h 57m 24s","+27° 29′ 52″","A galaxy group falling into the Coma Cluster."),
     GX("NGC 4921","—","NGC 4921","—","13.0","~320 Mly","SB(rs)ab anaemic spiral","13h 01m 26s","+27° 53′ 09″","The brightest spiral in Coma — 'anaemic', its star formation stripped by the cluster."),
     GX("Dragonfly 44","—","DF44","~10¹² M☉","~19","~330 Mly","ultra-diffuse","13h 00m 58s","+26° 58′ 35″","As massive as the Milky Way but nearly invisible — ~99.99% dark matter.")]);
-  DATA.children=["Laniakea Supercluster","Coma Cluster","Shapley Supercluster","Bullet Cluster","Sloan Great Wall","Hercules–Corona Borealis Great Wall","Boötes Void","KBC Void","IC 1101","Hoag's Object","RX J1131−1231","GN-z11","JADES-GS-z14-0","MoM-z14","3C 273","TON 618","EUCL J1729+6410","EUCL J1253+7054","GW150914","Cosmic Microwave Background"].map(g).filter(Boolean)
+  DATA.children=["Laniakea Supercluster","Coma Cluster","Shapley Supercluster","Bullet Cluster","Sloan Great Wall","Hercules–Corona Borealis Great Wall","Boötes Void","KBC Void","IC 1101","Hoag's Object","RX J1131−1231","GN-z11","JADES-GS-z14-0","MoM-z14","3C 273","TON 618","Phoenix A*","OJ 287","Holm 15A*","EUCL J1729+6410","EUCL J1253+7054","Abell 2744-QSO1","UHZ1","GW150914","Cosmic Microwave Background"].map(g).filter(Boolean)
   .concat([   // notable galaxies beyond Laniakea — placed at their true sky positions
     GX("Condor Galaxy","—","NGC 6872","—","12.7","212 Mly","SB(s)b barred spiral","20h 16m 57s","−70° 46′ 05″","The largest known spiral — 522,000 ly across, stretched by its encounter with IC 4970."),
     GX("Rubin's Galaxy","—","UGC 2885","—","13.5","232 Mly","SA(rs)c spiral","03h 53m 02s","+35° 35′ 22″","A gentle giant 2.5× the Milky Way's width — Vera Rubin traced its rotation to reveal dark matter."),
@@ -518,31 +518,38 @@ function procTex(n){
 const NGP=(function(){ const ra=192.859*Math.PI/180, dec=27.128*Math.PI/180;
   return {x:Math.cos(dec)*Math.cos(ra), y:Math.sin(dec), z:Math.cos(dec)*Math.sin(ra),
     clone(){ return new THREE.Vector3(this.x,this.y,this.z); }}; })();
-const _bhSpin=[], _spinners=[];
+const _bhSpin=[], _spinners=[], _bhFace=[]; let _tmpQ=null;
 function nodeMesh(n){
   // EVERY galaxy / star-cluster / structure / nebula / belt is a see-through veil you can look and fly
   // straight through — only compact bodies (stars, planets, moons, BHs…) are solid.
   const col=nodeColor(n);
   const region=isRegion(n);
-  if(n.type==='blackhole'){   // a real black hole: dark event horizon + photon ring + glowing accretion disc
+  if(n.type==='blackhole'){   // Interstellar/EHT look: dark shadow + lensed photon ring facing the viewer + hot beamed disc
     const g=new THREE.Group();
-    const core=new THREE.Mesh(new THREE.SphereGeometry(0.62,28,20),
-      new THREE.MeshBasicMaterial({color:0x000000}));            // occludes the starfield behind it
+    const core=new THREE.Mesh(new THREE.SphereGeometry(0.55,32,24),
+      new THREE.MeshBasicMaterial({color:0x000000}));            // event-horizon shadow, occludes the field behind
     g.add(core);
-    const pr=new THREE.Mesh(new THREE.TorusGeometry(0.68,0.035,10,64),
-      new THREE.MeshBasicMaterial({color:0xfff1d6, transparent:true, opacity:0.95,
-        blending:THREE.AdditiveBlending, depthWrite:false}));    // thin brilliant photon ring
-    g.add(pr);
-    const rg=new THREE.RingGeometry(0.78,1.7,72,4);              // accretion disc: white-hot inner edge → fades out
+    // accretion disc — wide ring seen nearly edge-on, hot inner edge, Doppler-beamed (one side brighter)
+    const rIn=0.62, rOut=2.4, rg=new THREE.RingGeometry(rIn,rOut,140,3);
     const pa=rg.attributes.position, cols=new Float32Array(pa.count*3);
-    for(let i=0;i<pa.count;i++){ const r=Math.hypot(pa.getX(i),pa.getY(i));
-      const t=Math.min(1,Math.max(0,(r-0.78)/(1.7-0.78)));
-      cols[i*3]=Math.pow(1-t,0.8); cols[i*3+1]=Math.pow(1-t,1.7)*0.72; cols[i*3+2]=Math.pow(1-t,3.0)*0.42; }
+    for(let i=0;i<pa.count;i++){ const x=pa.getX(i),y=pa.getY(i), r=Math.hypot(x,y);
+      const t=Math.min(1,Math.max(0,(r-rIn)/(rOut-rIn)));                 // inner hot → outer faint
+      const beam=0.3+0.7*(0.5+0.5*Math.cos(Math.atan2(y,x)));            // relativistic beaming → asymmetry
+      const b=Math.pow(1-t,1.1)*beam;
+      cols[i*3]=Math.min(1,b*1.7); cols[i*3+1]=Math.min(1,b*1.0); cols[i*3+2]=Math.min(1,b*0.5); }
     rg.setAttribute('color', new THREE.BufferAttribute(cols,3));
-    const disk=new THREE.Mesh(rg, new THREE.MeshBasicMaterial({vertexColors:true, transparent:true, opacity:0.95,
+    const disk=new THREE.Mesh(rg, new THREE.MeshBasicMaterial({vertexColors:true, transparent:true, opacity:0.96,
       side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
-    disk.rotation.x=Math.PI/2-0.45; g.add(disk); _bhSpin.push(disk);
-    pr.rotation.x=disk.rotation.x;                               // photon ring follows the disc plane
+    disk.rotation.x=Math.PI/2-0.12; g.add(disk); _bhSpin.push(disk);     // nearly edge-on → a slim oval, not Saturn
+    // lensed photon ring — brilliant thin ring that always faces the camera (the black-hole 'eye')
+    const ring=new THREE.Mesh(new THREE.RingGeometry(0.6,0.73,96),
+      new THREE.MeshBasicMaterial({color:0xffe6b0, transparent:true, opacity:0.98,
+        side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
+    g.add(ring); _bhFace.push(ring);
+    const glow=new THREE.Mesh(new THREE.RingGeometry(0.55,0.62,72),      // soft inner halo hugging the shadow
+      new THREE.MeshBasicMaterial({color:0xff9a4a, transparent:true, opacity:0.5,
+        side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
+    g.add(glow); _bhFace.push(glow);
     const h=hash(n.name); g.rotation.z=((h%100)/100-0.5)*0.9; g.rotation.x=((h>>>3)%100)/100*0.5-0.25;
     g.scale.setScalar(Math.max(0.3,n._R||1)); return g;
   }
@@ -1162,6 +1169,10 @@ function tickLabels(){
   sizeNodes();                                   // keep sphere sizes in sync with context sizing
   _bhSpin.forEach(d=>d.rotation.z+=0.0035);      // slow accretion-disc rotation
   _spinners.forEach(sp=>sp.rotation.y+=0.0016);  // gentle planet rotation
+  const _camO=Graph.camera&&Graph.camera();      // billboard the photon rings so they always face the viewer
+  if(_camO && _bhFace.length){ if(!_tmpQ) _tmpQ=new THREE.Quaternion();
+    _bhFace.forEach(o=>{ if(!o.parent) return;
+      o.parent.getWorldQuaternion(_tmpQ).invert(); o.quaternion.copy(_tmpQ.multiply(_camO.quaternion)); }); }
   const W2=elGraph.clientWidth, H2=elGraph.clientHeight, SMALL=window.innerWidth<640, MAX=SMALL?14:56;
   let cam; try{ cam=Graph.cameraPosition(); }catch(e){ cam=null; }
   const cand=[];
