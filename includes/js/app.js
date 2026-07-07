@@ -730,6 +730,15 @@ function buildStarCloud(){
    18,000 spectroscopic galaxies from the Sloan Digital Sky Survey (DR17), each at its true sky
    direction (RA/Dec) with distance from its measured redshift — the actual cosmic web, measured. */
 let _sdssCloud=null;
+/* flat ΛCDM (H0=67.7, Ωm=0.31): age of the Universe at redshift z, in Gyr. Light-travel
+   ("lookback") distance in Gly is numerically the lookback time in Gyr — every deep-survey
+   point is also a DATE: you see it as it was that long ago. */
+const AGE_NOW=13.8;
+const ageAtZ=z=>11.60*Math.asinh(1.4936*Math.pow(1+z,-1.5));
+const lookbackGyr=z=>Math.max(0, AGE_NOW-ageAtZ(z));
+const lookbackRows=z=>{ const lb=lookbackGyr(z), a=ageAtZ(z);
+  return [['Seen as it was', lb<0.095? Math.max(1,Math.round(lb*1000))+' million years ago' : lb.toFixed(lb<1?2:1)+' billion years ago'],
+          ['Universe age then', a.toFixed(a<1?2:1)+' Gyr ('+Math.max(1,Math.round(100*a/AGE_NOW))+'% of today)']]; };
 function buildGalaxySurvey(){
   if(typeof SDSS==='undefined'||typeof THREE==='undefined'||!Graph.scene) return;
   const home=NODES.find(n=>n.name==='Laniakea Supercluster'); const r0=(home?home._R:300)+40, r1=700;
@@ -762,10 +771,10 @@ function pickSdss(e){
 }
 function showSdssPanel(i){
   const g=SDSS[i]; if(!g) return; pph.style.display='none';
-  const zc=+g[2], dGly=(zc*4.28).toFixed(2);   // rough comoving distance ≈ z·c/H0 for small z
+  const zc=+g[2], dGly=lookbackGyr(zc).toFixed(2);   // light-travel distance (= lookback time)
   let h=`<span class="tag" style="background:#c8b6ff;color:#04121a;border-color:#c8b6ff">Galaxy · SDSS survey</span>`;
   h+=`<h2>SDSS galaxy</h2><div class="years">Sloan Digital Sky Survey · DR17 spectroscopic catalogue</div><div class="rows">`;
-  h+=row('Redshift z',zc)+row('Distance','~'+dGly+' Gly')+row('Right ascension',g[0].toFixed(2)+'°')+row('Declination',g[1].toFixed(2)+'°')+`</div>`;
+  h+=row('Redshift z',zc)+row('Distance','~'+dGly+' Gly (light-travel)')+lookbackRows(zc).map(r=>row(r[0],r[1])).join('')+row('Right ascension',g[0].toFixed(2)+'°')+row('Declination',g[1].toFixed(2)+'°')+`</div>`;
   h+=`<div class="note" style="font-style:normal;color:#dbe4ff">One of 18,000 real galaxies measured by the Sloan Digital Sky Survey — together they trace the actual cosmic web: walls, filaments and voids of the large-scale universe.</div>`;
   pbd.innerHTML=h; panel.classList.add('open');
 }
@@ -968,7 +977,7 @@ function buildMemberClouds(){
       sizeAttenuation:false, depthWrite:false, blending:THREE.AdditiveBlending});
     const pts=new THREE.Points(geo,mat); pts.frustumCulled=false; Graph.scene().add(pts);
     _memberClouds.push({pts, data:QSO, kindLabel:'Quasar · SDSS',
-      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+(s2[2]*4.28/(1+s2[2]*0.28)).toFixed(1)+' Gly (light-travel)'],['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']]});
+      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+lookbackGyr(s2[2]).toFixed(1)+' Gly (light-travel)']].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
   }
   // SUPERNOVA REMNANTS (Green 2019) — true sky direction in the Milky Way disc; catalogue has no distances,
   // so depth is a disc-like spread (noted in the panel)
@@ -1008,7 +1017,7 @@ function buildMemberClouds(){
       sizeAttenuation:false, depthWrite:false, blending:THREE.AdditiveBlending});
     const pts=new THREE.Points(geo,mat); pts.frustumCulled=false; Graph.scene().add(pts);
     _memberClouds.push({pts, data:HETCAT, kindLabel:'Source · HETDEX',
-      panelFn:s2=>[['Redshift z',s2[2]],['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']]});
+      panelFn:s2=>[['Redshift z',s2[2]]].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
   }
   // 2MRS — the ALL-SKY local universe (Huchra+ 2012): ~22k galaxies covering the whole sky (SDSS is one
   // wedge); fills the volume between our supercluster and the deep shells at real RA/Dec + redshift depth
@@ -1025,7 +1034,27 @@ function buildMemberClouds(){
       sizeAttenuation:false, depthWrite:false, blending:THREE.AdditiveBlending});
     const pts=new THREE.Points(geo,mat); pts.frustumCulled=false; Graph.scene().add(pts);
     _memberClouds.push({pts, data:MRS2, kindLabel:'Galaxy · 2MRS all-sky',
-      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+(s2[2]*4280).toFixed(0)+' Mly'],['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']]});
+      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+(lookbackGyr(s2[2])*1000).toFixed(0)+' Mly (light-travel)']].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
+  }
+  // DESI DR1 — 22,480 spectroscopic galaxies (largest redshift survey ever, ~18.7M total):
+  // same radial ruler as the SDSS shell for z ≤ 0.35 so the two surveys' cosmic web ALIGNS,
+  // then continues outward to z = 1.6 — DESI sees ~4× deeper than the SDSS galaxy shell.
+  if(typeof DESI!=='undefined'){
+    const home=NODES.find(n=>n.name==='Laniakea Supercluster'); const r0=(home?home._R:300)+40;
+    const pos=[], col=[], c=new THREE.Color();
+    DESI.forEach(g=>{ const d=dirOf(g[0],g[1]), z=g[2];
+      const r = z<=0.35 ? r0+(z/0.35)*(700-r0) : 700+((z-0.35)/1.25)*(990-700);
+      pos.push(d[0]*r, d[1]*r, d[2]*r);
+      c.setHSL(0.36-Math.min(1,z/1.6)*0.10, 0.72, 0.62);   // emerald → lime with z
+      col.push(c.r,c.g,c.b); });
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:1.9, map:dotTexture(), vertexColors:true, transparent:true, opacity:0.7,
+      sizeAttenuation:false, depthWrite:false, blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat); pts.frustumCulled=false; Graph.scene().add(pts);
+    _memberClouds.push({pts, data:DESI, kindLabel:'Galaxy · DESI DR1',
+      panelFn:s2=>[['Redshift z',s2[2]],['Distance','~'+lookbackGyr(s2[2]).toFixed(2)+' Gly (light-travel)']].concat(lookbackRows(s2[2])).concat([['Right ascension',s2[0].toFixed(2)+'°'],['Declination',s2[1].toFixed(2)+'°']])});
   }
   // FAST RADIO BURSTS (CHIME/FRB cat 1) — real sky positions; depth scaled from dispersion measure
   if(typeof FRBCAT!=='undefined'){
@@ -1238,6 +1267,10 @@ function showPanel(n){
   let rows=''; order.forEach(([k,l])=>{ const val=m[k]; if(val && val!=='—') rows+=row(l,val); });
   if(rows) h+=`<div class="rows">${rows}</div>`;
   if(m.note) h+=`<div class="note" style="font-style:normal;color:#dbe4ff">${m.note}</div>`;
+  // the map is also a TIMELINE: light-travel Gly = lookback Gyr → show the cosmic date
+  const gm=((m.dist||'')+'').match(/([\d.]+)\s*Gly/i);
+  if(gm && +gm[1]>0.05){ const lb=Math.min(13.79,+gm[1]), a=Math.max(0.01,AGE_NOW-lb);
+    h+=`<div class="note" style="font-style:normal;color:#9fd0ff">⏳ Seen as it was ~${lb.toFixed(1)} billion years ago — the Universe was ${a<1?Math.round(a*1000)+' million':a.toFixed(1)+' billion'} years old (${Math.max(1,Math.round(100*a/AGE_NOW))}% of today).</div>`; }
   // deep-sky objects link to their scholarly literature (NASA ADS resolves names via SIMBAD;
   // Solar System bodies aren't SIMBAD objects, so they don't get the link)
   const ADS_TYPES={galaxy:1,star:1,cluster:1,nebula:1,blackhole:1,exotic:1,brown:1,structure:1,cosmology:1};
@@ -1349,14 +1382,14 @@ function buildLegendLayers(){
     'Pulsar · ATNF catalogue':'pulsars','Quasar · SDSS':'quasars',
     'Supernova remnant · Green cat.':'SNRs','Planetary nebula · Strasbourg-ESO':'planetary nebulae',
     'GW merger · LIGO/Virgo/KAGRA':'GW events','Source · HETDEX':'HETDEX',
-    'Galaxy · 2MRS all-sky':'2MRS all-sky','Fast radio burst · CHIME':'FRBs','Asteroid · JPL SBDB':'asteroids'};
+    'Galaxy · 2MRS all-sky':'2MRS all-sky','Galaxy · DESI DR1':'DESI galaxies','Fast radio burst · CHIME':'FRBs','Asteroid · JPL SBDB':'asteroids'};
   _memberClouds.forEach(mc=>{ const col='#'+mc.pts.material.color.getHexString();
     mkToggle(el, `<span class="sw" style="background:${col};border-radius:50%"></span>${SHORT[mc.kindLabel]||mc.kindLabel}`,
       ()=>mc.pts.visible, ()=>{ mc.pts.visible=!mc.pts.visible; }); });
 }
 function countLeaves(){return NODES.filter(n=>!n.childIds.length).length;}
 function updateHud(){ const stars=(typeof BSC!=='undefined')?BSC.length:0, gal=(typeof SDSS!=='undefined')?SDSS.length:0;
-  document.getElementById('hud').innerHTML=`${NODES.length-1} objects · ${stars.toLocaleString()} BSC stars · ${gal.toLocaleString()} SDSS galaxies<br/>drag to orbit · scroll to zoom`;
+  document.getElementById('hud').innerHTML=`${NODES.length-1} objects · ${stars.toLocaleString()} BSC stars · ${gal.toLocaleString()} SDSS + ${(typeof DESI!=='undefined'?DESI.length:0).toLocaleString()} DESI galaxies<br/>drag to orbit · scroll to zoom`;
 }
 
 /* ===================== SEARCH ===================== */
