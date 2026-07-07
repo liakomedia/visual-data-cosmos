@@ -518,40 +518,71 @@ function procTex(n){
 const NGP=(function(){ const ra=192.859*Math.PI/180, dec=27.128*Math.PI/180;
   return {x:Math.cos(dec)*Math.cos(ra), y:Math.sin(dec), z:Math.cos(dec)*Math.sin(ra),
     clone(){ return new THREE.Vector3(this.x,this.y,this.z); }}; })();
-const _bhSpin=[], _spinners=[], _bhFace=[]; let _tmpQ=null;
+const _bhSpin=[], _spinners=[], _bhFace=[], _bhShaderMats=[]; let _tmpQ=null;
+/* Interstellar/Gargantua black hole — a billboarded quad whose fragment shader raymarches
+   light through a Schwarzschild-ish potential: the accretion disc is gravitationally lensed
+   up and over the shadow, with a bright photon ring and Doppler beaming. */
+const BH_FRAG=`
+precision highp float;
+varying vec2 vUv;
+uniform float uTime;
+void main(){
+  vec2 uv=(vUv-0.5)*2.0;
+  vec3 camPos=vec3(0.0,1.45,9.0);
+  vec3 fwd=normalize(-camPos), right=normalize(cross(fwd,vec3(0.0,1.0,0.0))), up=cross(right,fwd);
+  vec3 rd=normalize(fwd + (uv.x*right + uv.y*up)*0.95);   // wider FOV so the whole lensed image fits the quad
+  vec3 ro=camPos;
+  float rHor=1.0, rin=2.0, rout=8.6;
+  vec3 col=vec3(0.0); float alpha=0.0; bool horizon=false; float photon=0.0;
+  for(int i=0;i<190;i++){
+    float r=length(ro);
+    vec3 acc=-normalize(ro)*(2.1/(r*r));             // gravitational deflection ~1/r^2 (bends disc over the top)
+    rd=normalize(rd+acc*0.13);
+    float step=0.13*max(1.0, (r-1.5)*0.32);          // finer near the hole
+    vec3 np=ro+rd*step;
+    float rr2=length(np);
+    if(rr2<rHor){ horizon=true; break; }
+    photon+=exp(-abs(rr2-1.35)*7.0)*0.05;            // brilliant photon ring hugging the shadow
+    if(ro.y*np.y<0.0){                               // crossed the disc plane
+      float t=ro.y/(ro.y-np.y); vec3 h=mix(ro,np,t); float rr=length(h.xz);
+      if(rr>rin && rr<rout){
+        float tn=(rr-rin)/(rout-rin);
+        vec3 c=mix(vec3(1.0,0.97,0.86), vec3(1.0,0.55,0.2), pow(tn,0.5));
+        c=mix(c, vec3(0.6,0.16,0.04), pow(tn,2.2));
+        float br=pow(1.0-tn,1.1)+0.12;
+        float ang=atan(h.z,h.x);
+        vec3 vel=vec3(-sin(ang),0.0,cos(ang));       // orbital velocity → mild Doppler beaming
+        float dop=0.72+0.5*dot(vel,normalize(camPos-h));
+        float tex=0.78+0.22*sin(ang*5.0 - uTime*2.0 + rr*1.6);
+        float add=br*clamp(dop,0.28,1.5)*tex*2.2;
+        col+=c*add; alpha+=add*0.75;
+      }
+    }
+    ro=np;
+    if(rr2>rout+2.0 && dot(rd,ro)>0.0) break;        // ray has left the region & is receding → stop early (perf)
+  }
+  col+=vec3(1.0,0.9,0.72)*photon; alpha+=photon;     // add the photon ring
+  if(horizon){ col=vec3(0.0); alpha=1.0; }           // event-horizon shadow occludes the field
+  col=col/(1.0+col*0.7);                             // soft roll-off
+  alpha=clamp(alpha,0.0,1.0);
+  if(alpha<0.004) discard;
+  gl_FragColor=vec4(col,alpha);
+}`;
+const BH_VERT=`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
 function nodeMesh(n){
   // EVERY galaxy / star-cluster / structure / nebula / belt is a see-through veil you can look and fly
   // straight through — only compact bodies (stars, planets, moons, BHs…) are solid.
   const col=nodeColor(n);
   const region=isRegion(n);
-  if(n.type==='blackhole'){   // Interstellar/EHT look: dark shadow + lensed photon ring facing the viewer + hot beamed disc
+  if(n.type==='blackhole'){   // Interstellar 'Gargantua' — a lensing shader on a camera-facing quad
     const g=new THREE.Group();
-    const core=new THREE.Mesh(new THREE.SphereGeometry(0.55,32,24),
-      new THREE.MeshBasicMaterial({color:0x000000}));            // event-horizon shadow, occludes the field behind
-    g.add(core);
-    // accretion disc — wide ring seen nearly edge-on, hot inner edge, Doppler-beamed (one side brighter)
-    const rIn=0.62, rOut=2.4, rg=new THREE.RingGeometry(rIn,rOut,140,3);
-    const pa=rg.attributes.position, cols=new Float32Array(pa.count*3);
-    for(let i=0;i<pa.count;i++){ const x=pa.getX(i),y=pa.getY(i), r=Math.hypot(x,y);
-      const t=Math.min(1,Math.max(0,(r-rIn)/(rOut-rIn)));                 // inner hot → outer faint
-      const beam=0.3+0.7*(0.5+0.5*Math.cos(Math.atan2(y,x)));            // relativistic beaming → asymmetry
-      const b=Math.pow(1-t,1.1)*beam;
-      cols[i*3]=Math.min(1,b*1.7); cols[i*3+1]=Math.min(1,b*1.0); cols[i*3+2]=Math.min(1,b*0.5); }
-    rg.setAttribute('color', new THREE.BufferAttribute(cols,3));
-    const disk=new THREE.Mesh(rg, new THREE.MeshBasicMaterial({vertexColors:true, transparent:true, opacity:0.96,
-      side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
-    disk.rotation.x=Math.PI/2-0.12; g.add(disk); _bhSpin.push(disk);     // nearly edge-on → a slim oval, not Saturn
-    // lensed photon ring — brilliant thin ring that always faces the camera (the black-hole 'eye')
-    const ring=new THREE.Mesh(new THREE.RingGeometry(0.6,0.73,96),
-      new THREE.MeshBasicMaterial({color:0xffe6b0, transparent:true, opacity:0.98,
-        side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
-    g.add(ring); _bhFace.push(ring);
-    const glow=new THREE.Mesh(new THREE.RingGeometry(0.55,0.62,72),      // soft inner halo hugging the shadow
-      new THREE.MeshBasicMaterial({color:0xff9a4a, transparent:true, opacity:0.5,
-        side:THREE.DoubleSide, blending:THREE.AdditiveBlending, depthWrite:false}));
-    g.add(glow); _bhFace.push(glow);
-    const h=hash(n.name); g.rotation.z=((h%100)/100-0.5)*0.9; g.rotation.x=((h>>>3)%100)/100*0.5-0.25;
-    g.scale.setScalar(Math.max(0.3,n._R||1)); return g;
+    const uni={uTime:{value:(hash(n.name)%1000)/40}};
+    const mat=new THREE.ShaderMaterial({uniforms:uni, vertexShader:BH_VERT, fragmentShader:BH_FRAG,
+      transparent:true, depthWrite:false, side:THREE.DoubleSide});
+    const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2), mat);
+    g.add(quad); _bhFace.push(quad); _bhShaderMats.push(uni);
+    g.scale.setScalar(Math.max(0.3,n._R||1)*3.4);      // the lensed image extends well past the shadow
+    return g;
   }
   const texFile=TEXMAP[n.name];
   if(texFile){                                   // real imagery: unlit full-brightness sphere (+ Saturn's rings)
@@ -1169,10 +1200,11 @@ function tickLabels(){
   sizeNodes();                                   // keep sphere sizes in sync with context sizing
   _bhSpin.forEach(d=>d.rotation.z+=0.0035);      // slow accretion-disc rotation
   _spinners.forEach(sp=>sp.rotation.y+=0.0016);  // gentle planet rotation
-  const _camO=Graph.camera&&Graph.camera();      // billboard the photon rings so they always face the viewer
+  const _camO=Graph.camera&&Graph.camera();      // billboard the black-hole quads so they always face the viewer
   if(_camO && _bhFace.length){ if(!_tmpQ) _tmpQ=new THREE.Quaternion();
     _bhFace.forEach(o=>{ if(!o.parent) return;
       o.parent.getWorldQuaternion(_tmpQ).invert(); o.quaternion.copy(_tmpQ.multiply(_camO.quaternion)); }); }
+  for(let i=0;i<_bhShaderMats.length;i++) _bhShaderMats[i].uTime.value+=0.016;   // animate the accretion disc
   const W2=elGraph.clientWidth, H2=elGraph.clientHeight, SMALL=window.innerWidth<640, MAX=SMALL?14:56;
   let cam; try{ cam=Graph.cameraPosition(); }catch(e){ cam=null; }
   const cand=[];
