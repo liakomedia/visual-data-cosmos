@@ -51,5 +51,6 @@ Code is [MIT](LICENSE). **Not covered**: the catalogue-derived data files (see
 Scope imagery, and the LIAKO name and branding.
 
 Sister projects: [visual-data-solar](https://github.com/liakomedia/visual-data-solar) ·
-[visual-data-art](https://github.com/liakomedia/visual-data-art) — compiled by
+[visual-data-art](https://github.com/liakomedia/visual-data-art) ·
+[visual-data-planet](https://github.com/liakomedia/visual-data-planet) — compiled by
 [Liako](https://liako.eu).
