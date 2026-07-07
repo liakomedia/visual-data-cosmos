@@ -530,7 +530,7 @@ void main(){
   vec2 uv=(vUv-0.5)*2.0;
   vec3 camPos=vec3(0.0,1.45,9.0);
   vec3 fwd=normalize(-camPos), right=normalize(cross(fwd,vec3(0.0,1.0,0.0))), up=cross(right,fwd);
-  vec3 rd=normalize(fwd + (uv.x*right + uv.y*up)*0.95);   // wider FOV so the whole lensed image fits the quad
+  vec3 rd=normalize(fwd + (uv.x*right + uv.y*up)*1.28);   // wide FOV → whole lensed image sits inside the quad with margin
   vec3 ro=camPos;
   float rHor=1.0, rin=2.0, rout=8.6;
   vec3 col=vec3(0.0); float alpha=0.0; bool horizon=false; float photon=0.0;
@@ -581,7 +581,7 @@ function nodeMesh(n){
       transparent:true, depthWrite:false, side:THREE.DoubleSide});
     const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2), mat);
     g.add(quad); _bhFace.push(quad); _bhShaderMats.push(uni);
-    g.scale.setScalar(Math.max(0.3,n._R||1)*3.4);      // the lensed image extends well past the shadow
+    g.scale.setScalar(Math.max(0.3,n._R||1)*4.6);      // the lensed image extends well past the shadow
     return g;
   }
   const texFile=TEXMAP[n.name];
